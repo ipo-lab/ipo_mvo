@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+import pandas as pd
 import numpy as np
 
 
@@ -66,3 +68,22 @@ def generate_P(n_y, n_x):
         idx = range(i * n_x, ((i + 1) * n_x))
         P[i, idx] = 1.0
     return P
+
+
+def plot_loss(results_ipo, results_ols, snr, ylabel='MVO Loss'):
+    # --- plot
+    mvo_mean = pd.concat({
+        'IPO': results_ipo.mean(axis=0),
+        'OLS': results_ols.mean(axis=0)}, axis=1)
+
+    # --- error bars:
+    mvo_error = pd.concat({
+        'IPO': results_ipo.std(axis=0),
+        'OLS': results_ols.std(axis=0)}, axis=1)
+
+    color2 = ["#0000EE", "#CD3333"]
+    mvo_mean.plot.line(ylabel=ylabel, xlabel='Signal-to-noise', color=color2, linewidth=4, logx=True)  # title=title
+    plt.fill_between(snr, mvo_mean['IPO'] - 2 * mvo_error['IPO'],
+                     mvo_mean['IPO'] + 2 * mvo_error['IPO'], alpha=0.25, color=color2[0])
+    plt.fill_between(snr, mvo_mean['OLS'] - 2 * mvo_error['OLS'],
+                     mvo_mean['OLS'] + 2 * mvo_error['OLS'], alpha=0.25, color=color2[1])

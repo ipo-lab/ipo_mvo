@@ -21,7 +21,7 @@ def loss_mvo(z, y, cov_mat, lam=1):
     ret = torch_portfolio_return(z=z, y=y)
     var = torch_portfolio_variance(z=z, cov_mat=cov_mat)
     loss = -ret + 0.5 * lam * var
-    loss = loss.sum()
+    loss = loss.mean()
     return loss
 
 
