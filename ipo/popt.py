@@ -69,7 +69,7 @@ class MVOOLS(MVO):
 
 
 class MVOIPOIneqcon(MVO):
-    def __init__(self, P, A, b, lb, ub, control=box_qp_control()):
+    def __init__(self, P, A=None, b=None, lb=None, ub=None, control=box_qp_control()):
         super().__init__(P=P, A=A, b=b, lb=lb, ub=ub, control=control)
 
     def fit(self,
@@ -83,8 +83,9 @@ class MVOIPOIneqcon(MVO):
         loss_hist = []
         optimizer = torch.optim.Adam(model.parameters(), lr=lr)
         for epoch in range(n_epochs):
+            print(f'{epoch:-^20}')
             y_hat = model(x=x)
-            z = self.optimize(y_hat=y_hat, V_hat=V_hat)
+            z = self.optimize(y_hat=y_hat.unsqueeze(2), V_hat=V_hat)
             loss = loss_mvo(z=z.squeeze(2), y=y, cov_mat=V, lam=self.lam)
             loss_hist.append(loss.item())
             optimizer.zero_grad()
@@ -101,7 +102,7 @@ class IPO(nn.Module):
         super().__init__()
         # --- init cov model:
         self.P = P
-        self.theta = torch.nn.Parameter(torch.randn(P.shape[0]))
+        self.theta = torch.nn.Parameter(torch.randn(P.shape[1]))
 
     def forward(self, x):
         y_hat = x.matmul((self.theta * self.P).T)

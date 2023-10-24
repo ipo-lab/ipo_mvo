@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import torch
 import pandas as pd
 import numpy as np
 
@@ -38,8 +39,8 @@ def generate_problem_data(n_x=3, n_y=5, n_obs=1000, noise_multiplier_tau=0, poly
     frac = 1 / (1 + noise_multiplier_tau)
     y = frac * f_x + (1 - frac) * errors
     y_std = y.std(axis=0)
-    y = y/y_std
-    x = x/y_std.repeat(n_x)
+    y = y / y_std
+    x = x / y_std.repeat(n_x)
 
     # --- data
     data = {"x": x,
@@ -70,20 +71,40 @@ def generate_P(n_y, n_x):
     return P
 
 
-def plot_loss(results_ipo, results_ols, snr, ylabel='MVO Loss'):
+def plot_loss(results_1,
+              results_2,
+              x,
+              xlabel='Signal-to-noise',
+              ylabel='MVO Loss',
+              columns=["IPO", "OLS"],
+              color=["darkorange", "lightseagreen"]):
     # --- plot
-    mvo_mean = pd.concat({
-        'IPO': results_ipo.mean(axis=0),
-        'OLS': results_ols.mean(axis=0)}, axis=1)
+    mean = pd.concat({
+        '1': results_1.mean(axis=0),
+        '2': results_2.mean(axis=0)}, axis=1)
 
     # --- error bars:
-    mvo_error = pd.concat({
-        'IPO': results_ipo.std(axis=0),
-        'OLS': results_ols.std(axis=0)}, axis=1)
+    error = pd.concat({
+        '1': results_1.std(axis=0),
+        '2': results_2.std(axis=0)}, axis=1)
+    error = error/results_1.shape[0]**0.5
 
-    color2 = ["#0000EE", "#CD3333"]
-    mvo_mean.plot.line(ylabel=ylabel, xlabel='Signal-to-noise', color=color2, linewidth=4, logx=True)  # title=title
-    plt.fill_between(snr, mvo_mean['IPO'] - 2 * mvo_error['IPO'],
-                     mvo_mean['IPO'] + 2 * mvo_error['IPO'], alpha=0.25, color=color2[0])
-    plt.fill_between(snr, mvo_mean['OLS'] - 2 * mvo_error['OLS'],
-                     mvo_mean['OLS'] + 2 * mvo_error['OLS'], alpha=0.25, color=color2[1])
+    mean.columns = columns
+    error.columns = columns
+
+    mean.plot.line(ylabel=ylabel, xlabel=xlabel, color=color, linewidth=4, logx=True)
+    for i in range(len(columns)):
+        plt.fill_between(x,
+                         mean[columns[i]] - 1.96 * error[columns[i]],
+                         mean[columns[i]] + 1.96 * error[columns[i]],
+                         alpha=0.25, color=color[i])
+
+    return None
+
+
+def torch_rolling_cov(x, n=10):
+    x = pd.DataFrame(x.numpy())
+    covar = x.rolling(n).cov()
+    covar = covar.to_numpy()
+    covar = covar.reshape((x.shape[0], x.shape[1], x.shape[1]))
+    return torch.tensor(covar)

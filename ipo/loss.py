@@ -1,5 +1,15 @@
 import torch
-from ipo.utils import torch_transpose_batch
+
+
+def torch_transpose_batch(x):
+    if len(x.shape) > 2:
+        dim0 = 1
+        dim1 = 2
+    else:
+        dim0 = 0
+        dim1 = 1
+
+    return torch.transpose(x, dim0=dim0, dim1=dim1)
 
 
 def torch_portfolio_return(z, y):
@@ -26,11 +36,8 @@ def loss_mvo(z, y, cov_mat, lam=1):
 
 
 def pct_var(y, y_hat):
-    num = (y - y_hat)**2
-    denom = y**2
-    frac = num.mean()/denom.mean()
+    num = (y - y_hat) ** 2
+    denom = y ** 2
+    frac = num.mean() / denom.mean()
     pct_var = 1 - frac
     return pct_var
-
-
-

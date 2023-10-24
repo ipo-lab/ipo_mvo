@@ -4,15 +4,14 @@ import numpy as np
 import torch
 from ipo.loss import loss_mvo, pct_var
 from ipo.popt import MVOIPOUncon, MVOOLS
-from ipo.utils import torch_rolling_cov
-from experiments.utils import generate_problem_data, plot_loss
+from experiments.utils import generate_problem_data, plot_loss, torch_rolling_cov
 
 # --- params
 n_sims = 100
-noise_levels = [1000, 500, 200, 100, 50, 20, 10, 5, 1]
+noise_levels = [1000, 500, 200, 100, 50, 20, 10]
 snr = [1/noise for noise in noise_levels]
-res = 5
-rho = 0.0
+res = 20
+rho = 0.75
 
 n_x = 3
 n_y = 10
@@ -79,9 +78,23 @@ results_ipo_pct.columns = snr
 results_ols_pct.columns = snr
 
 # --- plot results:
-plot_loss(results_ipo_mvo, results_ols_mvo, snr)
+plot_loss(results_1=results_ipo_mvo,
+          results_2=results_ols_mvo,
+          x=snr,
+          ylabel='MVO Loss',
+          columns=["IPO", "OLS"])
 
-plot_loss(results_ipo_pct, results_ols_pct, snr, ylabel='Pct Variance Explained')
+plt.savefig(f'images/exp_1_mvo_loss_res_{res}_rho_{int(100*rho)}.png')
+
+plot_loss(results_1=results_ipo_pct,
+          results_2=results_ols_pct,
+          x=snr,
+          ylabel='Pct Variance Explained',
+          columns=["IPO", "OLS"])
+
+plt.savefig(f'images/exp_1_pct_var_res_{res}_rho_{int(100*rho)}.png')
+
+
 
 
 
