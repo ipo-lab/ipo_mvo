@@ -1,6 +1,6 @@
 contourpy==1.1.0
 cycler==0.11.0
-fonttools==4.40.0
+fonttools==4.47.0
 kiwisolver==1.4.4
 -e git+ssh://git@github.com/ipo-lab/lqp_py@1870aaba725b31f3574fdd85a15cc833d52e6f1b#egg=lqp_py
 matplotlib==3.6.2
