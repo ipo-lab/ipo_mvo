@@ -2,12 +2,12 @@ contourpy==1.1.0
 cycler==0.11.0
 fonttools==4.47.0
 kiwisolver==1.4.4
--e git+ssh://git@github.com/ipo-lab/lqp_py@1870aaba725b31f3574fdd85a15cc833d52e6f1b#egg=lqp_py
+-e git+ssh://git@github.com/ipo-lab/lqp_py@c1f03347308fbdcb28a0ac5ac3730091233bf347#egg=lqp_py
 matplotlib==3.6.2
 numpy==1.24.1
 packaging==23.1
 pandas==1.5.2
-Pillow==10.0.1
+pillow==10.2.0
 pyparsing==3.1.0
 python-dateutil==2.8.2
 pytz==2023.3
