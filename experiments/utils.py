@@ -77,7 +77,8 @@ def plot_loss(results_1,
               xlabel='Signal-to-noise',
               ylabel='MVO Loss',
               columns=["IPO", "OLS"],
-              color=["darkorange", "lightseagreen"]):
+              color=["darkorange", "lightseagreen"],
+              logx=True):
     # --- plot
     mean = pd.concat({
         '1': results_1.mean(axis=0),
@@ -92,7 +93,7 @@ def plot_loss(results_1,
     mean.columns = columns
     error.columns = columns
 
-    mean.plot.line(ylabel=ylabel, xlabel=xlabel, color=color, linewidth=4, logx=True)
+    mean.plot.line(ylabel=ylabel, xlabel=xlabel, color=color, linewidth=4, logx=logx)
     for i in range(len(columns)):
         plt.fill_between(x,
                          mean[columns[i]] - 1.96 * error[columns[i]],

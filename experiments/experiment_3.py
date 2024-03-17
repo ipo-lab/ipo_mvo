@@ -7,10 +7,10 @@ from ipo.popt import MVOIPOUncon, MVOIPOIneqcon
 from experiments.utils import generate_problem_data, plot_loss, torch_rolling_cov
 
 # --- params
-n_sims = 100
-noise = 100
+n_sims = 5
+noise = 50
 snr = 1/noise
-res = 5
+res = 20
 rho = 0.0
 constraint_list = [0.05, 0.10, 0.25, 0.50, 0.75, 1, 2, 5, 10]
 
@@ -53,15 +53,15 @@ for constraint in constraint_list:
         V_oos = V[idx_oos]
 
         # --- modelling
-        model_ipo_uncon = MVOIPOUncon(P=P, lb=lb, ub=ub)
-        model_ipo = MVOIPOIneqcon(P=P, lb=lb, ub=ub)
+        model_ipo_uncon = MVOIPOUncon(P=P, lb=lb, ub=ub, lam=0.10)
+        model_ipo = MVOIPOIneqcon(P=P, lb=lb, ub=ub, lam=0.10)
 
         # --- fit, predict, optimize:
         model_ipo_uncon.fit(x=x_is, y=y_is, V=V_is, V_hat=V_hat_is)
         y_hat_ipo_uncon = model_ipo_uncon.predict(x=x_oos)
         z_ipo_uncon = model_ipo.optimize(y_hat=y_hat_ipo_uncon, V_hat=V_hat_oos)
 
-        model_ipo.fit(x=x_is, y=y_is, V=V_is, V_hat=V_hat_is, lr=0.25, n_epochs=200)
+        model_ipo.fit(x=x_is, y=y_is, V=V_is, V_hat=V_hat_is, lr=0.25, n_epochs=100)
         y_hat_ipo = model_ipo.predict(x=x_oos)
         z_ipo = model_ipo.optimize(y_hat=y_hat_ipo, V_hat=V_hat_oos)
         z_ipo = z_ipo.detach()
